@@ -68,7 +68,7 @@ export const OrderShow = () => {
       <RefineListView
         title={
           <Typography variant="h5">
-            {t("orders.order")} #{record?.orderNumber}
+            {t("orders.order")} #1{record?.orderNumber}
           </Typography>
         }
         headerButtons={[

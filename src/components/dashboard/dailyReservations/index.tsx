@@ -8,17 +8,15 @@ import {
 } from "recharts";
 import { ChartTooltip } from "../chartTooltip";
 import dayjs from "dayjs";
-
-type IReservationChart = {
-  date: string; // e.g., "2025-06-01"
-  value: number; // number of reservations that day
-};
+import type { IOrderChart } from "../../../interfaces";
 
 type Props = {
-  data: IReservationChart[];
+  data: IOrderChart[];
 };
 
-export const DailyReservations = ({ data = [] }: Props) => {
+export const DailyOrders = (props: Props) => {
+  const data = props.data || [];
+
   return (
     <ResponsiveContainer width="99%">
       <BarChart
@@ -29,16 +27,21 @@ export const DailyReservations = ({ data = [] }: Props) => {
         <XAxis
           dataKey="date"
           fontSize={12}
-          tickFormatter={(value) =>
-            data.length > 7
-              ? dayjs(value).format("MM/DD")
-              : dayjs(value).format("ddd")
-          }
+          tickFormatter={(value) => {
+            if (data.length > 7) {
+              return dayjs(value).format("MM/DD");
+            }
+
+            return dayjs(value).format("ddd");
+          }}
         />
         <YAxis dataKey="value" fontSize={12} />
         <Bar type="natural" dataKey="value" fill="#2196F3" />
         <Tooltip
-          cursor={{ fill: "rgba(255, 255, 255, 0.2)", radius: 4 }}
+          cursor={{
+            fill: "rgba(255, 255, 255, 0.2)",
+            radius: 4,
+          }}
           content={
             <ChartTooltip
               labelFormatter={(label) => dayjs(label).format("MMM D, YYYY")}

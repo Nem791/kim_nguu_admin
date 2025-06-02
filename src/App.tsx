@@ -27,17 +27,12 @@ import StoreOutlinedIcon from "@mui/icons-material/StoreOutlined";
 import Box from "@mui/material/Box";
 import { authProvider } from "./authProvider";
 import { DashboardPage } from "./pages/dashboard";
-import { OrderList, OrderShow, ReservationList } from "./pages/orders";
-import { CustomerShow, CustomerList } from "./pages/customers";
-import { CourierList, CourierCreate, CourierEdit } from "./pages/couriers";
 import { AuthPage } from "./pages/auth";
-import { StoreList, StoreEdit, StoreCreate } from "./pages/stores";
-import { ProductEdit, ProductList, ProductCreate } from "./pages/products";
-import { CategoryList } from "./pages/categories";
 import { ColorModeContextProvider } from "./contexts";
 import { Header, Title } from "./components";
 import { useAutoLoginForDemo } from "./hooks";
 import { customDataProvider } from "./customDataProvider";
+import { ReservationShow, ReservationList } from "./pages/reservations";
 
 const API_URL = "https://api.finefoods.refine.dev";
 
@@ -59,7 +54,6 @@ const App: React.FC = () => {
 
   return (
     <BrowserRouter>
-      <GitHubBanner />
       <KBarProvider>
         <ColorModeContextProvider>
           <CssBaseline />
@@ -67,6 +61,7 @@ const App: React.FC = () => {
           <RefineSnackbarProvider>
             <Refine
               routerProvider={routerProvider}
+              // dataProvider={dataProvider(API_URL)}
               dataProvider={customDataProvider}
               authProvider={authProvider}
               i18nProvider={i18nProvider}
@@ -84,57 +79,6 @@ const App: React.FC = () => {
                   meta: {
                     label: "Dashboard",
                     icon: <Dashboard />,
-                  },
-                },
-                {
-                  name: "orders",
-                  list: "/orders",
-                  show: "/orders/:id",
-                  meta: {
-                    icon: <ShoppingBagOutlinedIcon />,
-                  },
-                },
-                {
-                  name: "users",
-                  list: "/customers",
-                  show: "/customers/:id",
-                  meta: {
-                    icon: <AccountCircleOutlinedIcon />,
-                  },
-                },
-                {
-                  name: "products",
-                  list: "/products",
-                  create: "/products/new",
-                  edit: "/products/:id/edit",
-                  show: "/products/:id",
-                  meta: {
-                    icon: <FastfoodOutlinedIcon />,
-                  },
-                },
-                {
-                  name: "categories",
-                  list: "/categories",
-                  meta: {
-                    icon: <LabelOutlinedIcon />,
-                  },
-                },
-                {
-                  name: "stores",
-                  list: "/stores",
-                  create: "/stores/new",
-                  edit: "/stores/:id/edit",
-                  meta: {
-                    icon: <StoreOutlinedIcon />,
-                  },
-                },
-                {
-                  name: "couriers",
-                  list: "/couriers",
-                  create: "/couriers/new",
-                  edit: "/couriers/:id/edit",
-                  meta: {
-                    icon: <MopedOutlined />,
                   },
                 },
                 {
@@ -172,54 +116,9 @@ const App: React.FC = () => {
                 >
                   <Route index element={<DashboardPage />} />
 
-                  <Route path="/orders">
+                  <Route path="/reservations">
                     <Route index element={<ReservationList />} />
-                    <Route path=":id" element={<OrderShow />} />
-                  </Route>
-                  <Route
-                    path="/customers"
-                    element={
-                      <CustomerList>
-                        <Outlet />
-                      </CustomerList>
-                    }
-                  >
-                    <Route path=":id" element={<CustomerShow />} />
-                  </Route>
-
-                  <Route
-                    path="/products"
-                    element={
-                      <ProductList>
-                        <Outlet />
-                      </ProductList>
-                    }
-                  >
-                    <Route path=":id/edit" element={<ProductEdit />} />
-                    <Route path="new" element={<ProductCreate />} />
-                  </Route>
-
-                  <Route path="/stores">
-                    <Route index element={<StoreList />} />
-                    <Route path="new" element={<StoreCreate />} />
-                    <Route path=":id/edit" element={<StoreEdit />} />
-                  </Route>
-
-                  <Route path="/categories" element={<CategoryList />} />
-
-                  <Route path="/couriers">
-                    <Route
-                      path=""
-                      element={
-                        <CourierList>
-                          <Outlet />
-                        </CourierList>
-                      }
-                    >
-                      <Route path="new" element={<CourierCreate />} />
-                    </Route>
-
-                    <Route path=":id/edit" element={<CourierEdit />} />
+                    <Route path=":id" element={<ReservationShow />} />
                   </Route>
                 </Route>
 

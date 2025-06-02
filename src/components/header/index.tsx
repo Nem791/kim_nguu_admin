@@ -132,10 +132,17 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
   });
 
   useEffect(() => {
-    setOptions([]);
-    refetchOrders();
-    refetchCouriers();
-    refetchStores();
+    // Only proceed if 'value' has some content
+    if (value && value.trim().length > 0) {
+      // You can adjust the length, e.g., value.trim().length >= 2
+      setOptions([]); // Clear previous options before new search
+      refetchOrders();
+      refetchCouriers();
+      refetchStores();
+    } else {
+      // If value is empty, clear the options and don't fetch
+      setOptions([]);
+    }
   }, [value, refetchOrders, refetchCouriers, refetchStores]);
 
   return (
@@ -284,7 +291,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
           >
             <Select
               size="small"
-              disableUnderline
+              // disableUnderline
               defaultValue={currentLocale}
               slotProps={{
                 input: {

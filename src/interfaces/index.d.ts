@@ -176,6 +176,7 @@ export type IVehicle = {
 
 export interface IReservation {
   _id: string;
+  id: string;
   name: string;
   phone: string;
   email?: string;

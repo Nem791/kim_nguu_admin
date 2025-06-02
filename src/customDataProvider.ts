@@ -40,7 +40,10 @@ export const customDataProvider: DataProvider = {
     }
 
     return {
-      data: result.data,
+      data: result.data.map((record: any) => ({
+        id: record._id,
+        ...record,
+      })),
       total: result.total,
     };
   },
@@ -52,8 +55,13 @@ export const customDataProvider: DataProvider = {
       throw new Error(result.error || "Error fetching record");
     }
 
+    const record = result.data;
+
     return {
-      data: result.data,
+      data: {
+        id: record._id, // <- this is the key part
+        ...record,
+      },
     };
   },
 

@@ -8,11 +8,11 @@ i18n
   .use(detector)
   .use(initReactI18next)
   .init({
-    supportedLngs: ["en", "de"],
+    supportedLngs: ["en", "de", "vi"], // ✅ Add Vietnamese
     backend: {
       loadPath: "/locales/{{lng}}.json",
     },
-    fallbackLng: ["en", "de"],
+    fallbackLng: ["en", "de", "vi"], // ✅ Use a single fallback (or set "vi" if you prefer)
   });
 
 export default i18n;

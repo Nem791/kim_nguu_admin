@@ -25,10 +25,17 @@ export const customDataProvider: DataProvider = {
       // Add more operators as needed
     });
 
+    // Default sorting if not provided
+    if (sorters.length === 0) {
+      sorters = [{ field: "updatedAt", order: "desc" }];
+    }
+
     // Sorting
     if (sorters.length > 0) {
-      const sorter = sorters[0];
-      query.sort = `${sorter.order === "desc" ? "-" : ""}${sorter.field}`;
+      // You could support multi-sort like this (optional):
+      query.sort = sorters
+        .map(({ field, order }) => `${order === "desc" ? "-" : ""}${field}`)
+        .join(",");
     }
 
     const url = `${API_URL}/${resource}?${qs.stringify(query)}`;
@@ -84,14 +91,19 @@ export const customDataProvider: DataProvider = {
     };
   },
 
-  update: async (resource, { id, variables }) => {
+  update: async (resource, { id, values }) => {
+    if (!id || !values) {
+      throw new Error("Missing id or values in update call");
+    }
+
     const response = await fetch(`${API_URL}/${resource}/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(variables),
+      body: JSON.stringify(values),
     });
+
     const result = await response.json();
 
     if (!result.success) {

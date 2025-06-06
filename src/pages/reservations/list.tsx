@@ -68,6 +68,12 @@ export const ReservationList = () => {
   >({
     resource: "reservations", // Explicitly set resource for clarity
     initialPageSize: 10,
+    sorters: [
+      {
+        field: "updatedAt",
+        order: "desc",
+      },
+    ],
     // Example of syncWithLocation: true if you want filters/sorters in URL
     // syncWithLocation: true,
   });
@@ -97,7 +103,7 @@ export const ReservationList = () => {
       {
         field: "status",
         headerName: t("reservations.fields.status", "Status"),
-        width: 120,
+        width: 180,
         renderCell: function render({ row }) {
           // Assuming OrderStatus component can take "Pending", "Ready", "Cancelled"
           return <OrderStatus status={row.status} />;
@@ -127,12 +133,9 @@ export const ReservationList = () => {
               alignItems="center"
               height="100%"
               width="100%"
-              pl={1} // Optional: consistent left padding
+              pl={1}
             >
-              <DateField
-                value={dateTimeString}
-                format="MMM D, YYYY / hh:mm a"
-              />
+              <DateField value={dateTimeString} format="DD/MM/YYYY HH:mm" />
             </Box>
           );
         },
@@ -159,11 +162,13 @@ export const ReservationList = () => {
         field: "area",
         headerName: t("reservations.fields.area", "Area"),
         width: 150,
+        hide: true,
       },
       {
         field: "restaurant",
         headerName: t("reservations.fields.restaurant", "Restaurant"),
         width: 180,
+        hide: true,
       },
       {
         field: "message",
@@ -184,7 +189,7 @@ export const ReservationList = () => {
               width="100%"
               pl={1}
             >
-              <DateField value={row.createdAt} format="MMM D, YYYY / hh:mm a" />
+              <DateField value={row.createdAt} format="DD/MM/YYYY HH:mm" />
             </Box>
           );
         },
@@ -202,56 +207,58 @@ export const ReservationList = () => {
               width="100%"
               pl={1}
             >
-              <DateField value={row.updatedAt} format="MMM D, YYYY / hh:mm a" />
+              <DateField value={row.updatedAt} format="DD/MM/YYYY HH:mm" />
             </Box>
           );
         },
       },
-      {
-        field: "actions",
-        type: "actions",
-        headerName: t("table.actions", "Actions"),
-        sortable: false,
-        headerAlign: "right",
-        align: "right",
-        getActions: ({ id, row }) => [
-          // `row` is available here
-          <GridActionsCellItem
-            key={1}
-            icon={<CheckOutlinedIcon color="success" />}
-            sx={{ padding: "2px 6px" }}
-            label={t("buttons.accept", "Accept")}
-            showInMenu
-            disabled={row.status === "Ready" || row.status === "Cancelled"} // Optional: disable if already Ready or Cancelled
-            onClick={() => {
-              mutate({
-                resource: "reservations",
-                id,
-                values: {
-                  status: "Ready",
-                },
-              });
-            }}
-          />,
-          <GridActionsCellItem
-            key={2}
-            icon={<CloseOutlinedIcon color="error" />}
-            sx={{ padding: "2px 6px" }}
-            label={t("buttons.reject", "Reject")}
-            showInMenu
-            disabled={row.status === "Cancelled" || row.status === "Ready"} // Optional: disable if already Cancelled or Ready
-            onClick={() =>
-              mutate({
-                resource: "reservations",
-                id,
-                values: {
-                  status: "Cancelled",
-                },
-              })
-            }
-          />,
-        ],
-      },
+      // {
+      //   field: "actions",
+      //   type: "actions",
+      //   headerName: t("table.actions", "Actions"),
+      //   sortable: false,
+      //   headerAlign: "right",
+      //   align: "right",
+      //   getActions: ({ id, row }) => [
+      //     // `row` is available here
+      //     <GridActionsCellItem
+      //       key={1}
+      //       icon={<CheckOutlinedIcon color="success" />}
+      //       sx={{ padding: "2px 6px" }}
+      //       label={t("buttons.accept", "Accept")}
+      //       showInMenu
+      //       disabled={row.status === "Ready" || row.status === "Cancelled"} // Optional: disable if already Ready or Cancelled
+      //       onClick={() => {
+      //         console.log(id);
+      //         console.log(row);
+      //         mutate({
+      //           resource: "reservations",
+      //           id,
+      //           values: {
+      //             status: "Ready",
+      //           },
+      //         });
+      //       }}
+      //     />,
+      //     <GridActionsCellItem
+      //       key={2}
+      //       icon={<CloseOutlinedIcon color="error" />}
+      //       sx={{ padding: "2px 6px" }}
+      //       label={t("buttons.reject", "Reject")}
+      //       showInMenu
+      //       disabled={row.status === "Cancelled" || row.status === "Ready"} // Optional: disable if already Cancelled or Ready
+      //       onClick={() =>
+      //         mutate({
+      //           resource: "reservations",
+      //           id,
+      //           values: {
+      //             status: "Cancelled",
+      //           },
+      //         })
+      //       }
+      //     />,
+      //   ],
+      // },
     ],
     [t, mutate]
   );
@@ -283,8 +290,22 @@ export const ReservationList = () => {
         reservationTime: reservationTime, // Combined date and time
         guestCount: item.guestCount,
         message: item.message,
-        createdAt: new Date(item.createdAt).toLocaleString(), // Or use a specific format
-        updatedAt: new Date(item.updatedAt).toLocaleString(),
+        createdAt: new Date(item.createdAt).toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
+        updatedAt: new Date(item.updatedAt).toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
       };
     },
   });
@@ -306,6 +327,15 @@ export const ReservationList = () => {
       <DataGrid
         {...dataGridProps}
         columns={columns}
+        initialState={{
+          columns: {
+            columnVisibilityModel: {
+              area: false,
+              restaurant: false,
+              createdAt: false,
+            },
+          },
+        }}
         onRowClick={({ id }) => {
           show("reservations", id.toString()); // Ensure id is string for URL
         }}

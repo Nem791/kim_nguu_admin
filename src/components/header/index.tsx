@@ -196,7 +196,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
           }}
         >
           <Stack direction="row" flex={1}>
-            <Autocomplete
+            {/* <Autocomplete
               sx={{
                 maxWidth: 550,
               }}
@@ -279,7 +279,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
                   </Box>
                 );
               }}
-            />
+            /> */}
           </Stack>
           <Stack
             direction="row"
@@ -291,13 +291,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
           >
             <Select
               size="small"
-              // disableUnderline
               defaultValue={currentLocale}
-              slotProps={{
-                input: {
-                  "aria-label": "Without label",
-                },
-              }}
               variant="outlined"
               sx={{
                 width: {
@@ -310,14 +304,15 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
                 <MenuItem
                   selected={currentLocale === lang}
                   key={lang}
-                  defaultValue={lang}
                   onClick={() => {
                     changeLanguage(lang);
                   }}
                   value={lang}
                 >
                   <Typography color="text.secondary">
-                    {lang === "en" ? "English" : "German"}
+                    {lang === "en" && "English"}
+                    {lang === "de" && "German"}
+                    {lang === "vi" && "Tiếng Việt"} {/* Add Vietnamese here */}
                   </Typography>
                 </MenuItem>
               ))}

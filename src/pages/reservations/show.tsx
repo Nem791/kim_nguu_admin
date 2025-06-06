@@ -12,6 +12,7 @@ import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid2";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 
 import { RefineListView } from "../../components";
 import type { IReservation } from "../../interfaces";
@@ -52,14 +53,15 @@ export const ReservationShow = () => {
     }
   }, [routeId, t]);
 
-  const handleMutate = async (newStatus: "Ready" | "Cancelled") => {
+  // Update the function to accept "Pending" as a valid status
+  const handleMutate = async (newStatus: "Ready" | "Cancelled" | "Pending") => {
     if (record && record.id) {
       setIsMutating(true);
       setError(null);
       try {
         const response = await customDataProvider.update("reservations", {
           id: record.id,
-          variables: { status: newStatus },
+          values: { status: newStatus },
         });
         setRecord(response.data as IReservation);
       } catch (err: any) {
@@ -89,8 +91,18 @@ export const ReservationShow = () => {
     );
   }
 
-  const canAccept = record.status === "Pending";
+  // A reservation can be accepted if it's new (Pending) or if it was previously cancelled.
+  const canAccept =
+    record.status === "Pending" || record.status === "Cancelled";
+
+  // A reservation can be rejected if it's new (Pending) or if it's currently confirmed (Ready).
   const canReject = record.status === "Pending" || record.status === "Ready";
+
+  // A reservation can be moved back to Pending if it has already been actioned (Ready or Cancelled).
+  const canSetPending =
+    record.status === "Ready" || record.status === "Cancelled";
+
+  // --- CORRECTED UI ---
 
   const headerButtons = [
     <Stack key="actions" direction="row" spacing={1}>
@@ -114,8 +126,22 @@ export const ReservationShow = () => {
       >
         {t("buttons.reject", "Reject")}
       </Button>
+      {/* --- NEW BUTTON --- */}
+      <Button
+        disabled={!canSetPending || isMutating}
+        variant="outlined"
+        size="small"
+        color="primary"
+        startIcon={<HourglassEmptyIcon />}
+        onClick={() => handleMutate("Pending")}
+      >
+        {t("buttons.setPending", "Set to Pending")}
+      </Button>
+      {/* --- END OF NEW BUTTON --- */}
     </Stack>,
   ];
+
+  // --- END OF CORRECTION ---
 
   return (
     <>
@@ -188,7 +214,7 @@ export const ReservationShow = () => {
                 {record.date && (
                   <Typography component="div">
                     <strong>{t("reservations.date", "Date")}:</strong>{" "}
-                    <DateField value={record.date} format="MMM D, YYYY" />
+                    <DateField value={record.date} format="DD/MM/YYYY" />
                   </Typography>
                 )}
                 {record.hour != null && record.minute != null && (
@@ -229,7 +255,7 @@ export const ReservationShow = () => {
                     </strong>{" "}
                     <DateField
                       value={record.createdAt}
-                      format="MMM D, YYYY / hh:mm a"
+                      format="DD/MM/YYYY HH:mm"
                     />
                   </Typography>
                 )}
@@ -247,7 +273,7 @@ export const ReservationShow = () => {
                     </strong>{" "}
                     <DateField
                       value={record.updatedAt}
-                      format="MMM D, YYYY / hh:mm a"
+                      format="DD/MM/YYYY HH:mm"
                     />
                   </Typography>
                 )}

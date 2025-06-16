@@ -279,6 +279,9 @@
     "dailyOrders": {
       "title": "Daily Orders"
     },
+    "dailyReservations": {
+      "title": "Daily Reservations"
+    },
     "newCustomers": {
       "title": "New Customers"
     },
@@ -294,6 +297,9 @@
     },
     "recentOrders": {
       "title": "Recent Orders"
+    },
+    "recentReservations": {
+      "title": "Recent Reservations"
     },
     "trendingMenus": {
       "title": "Daily Trending Menus"

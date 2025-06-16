@@ -279,6 +279,9 @@
     "dailyOrders": {
       "title": "Đơn đặt hàng hàng ngày"
     },
+    "dailyReservations": {
+      "title": "Đơn đặt bàn hàng ngày"
+    },
     "newCustomers": {
       "title": "Khách hàng mới"
     },
@@ -294,6 +297,9 @@
     },
     "recentOrders": {
       "title": "Đơn đặt hàng gần đây"
+    },
+    "recentReservations": {
+      "title": "Đơn đặt bàn gần đây"
     },
     "trendingMenus": {
       "title": "Menu xu hướng hàng ngày"

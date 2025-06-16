@@ -102,6 +102,7 @@ export const customDataProvider: DataProvider = {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(values),
+      credentials: "include",
     });
 
     const result = await response.json();
@@ -118,6 +119,7 @@ export const customDataProvider: DataProvider = {
   deleteOne: async (resource, { id }) => {
     const response = await fetch(`${API_URL}/${resource}/${id}`, {
       method: "DELETE",
+      credentials: "include",
     });
     const result = await response.json();
 

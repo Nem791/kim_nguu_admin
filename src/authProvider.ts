@@ -1,63 +1,52 @@
 import type { AuthProvider } from "@refinedev/core";
-import { disableAutoLogin, enableAutoLogin } from "./hooks";
-
-export const TOKEN_KEY = "refine-auth";
 
 export const authProvider: AuthProvider = {
   login: async ({ email, password }) => {
-    enableAutoLogin();
-    localStorage.setItem(TOKEN_KEY, `${email}-${password}`);
-    return {
-      success: true,
-      redirectTo: "/",
-    };
-  },
-  register: async ({ email, password }) => {
-    try {
-      await authProvider.login({ email, password });
+    const response = await fetch("http://localhost:3000/admin/login", {
+      method: "POST",
+      credentials: "include", // <- must include to store cookie
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: email, password }),
+    });
+
+    if (response.ok) {
       return {
         success: true,
+        redirectTo: "/",
       };
-    } catch (error) {
+    } else {
+      const error = await response.json();
       return {
         success: false,
         error: {
-          message: "Register failed",
-          name: "Invalid email or password",
+          name: "Login Error",
+          message: error.message || "Invalid credentials",
         },
       };
     }
   },
-  updatePassword: async (params) => {
-    return {
-      success: true,
-    };
-  },
-  forgotPassword: async () => {
-    return {
-      success: true,
-    };
-  },
+
   logout: async () => {
-    disableAutoLogin();
-    localStorage.removeItem(TOKEN_KEY);
+    await fetch("http://localhost:3000/admin/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
     return {
       success: true,
       redirectTo: "/login",
     };
   },
-  onError: async (error) => {
-    if (error.response?.status === 401) {
-      return {
-        logout: true,
-      };
-    }
 
-    return { error };
-  },
   check: async () => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token) {
+    const response = await fetch("http://localhost:3000/admin/me", {
+      method: "GET",
+      credentials: "include", // <- must include so cookie is sent
+    });
+
+    if (response.ok) {
       return {
         authenticated: true,
       };
@@ -65,25 +54,55 @@ export const authProvider: AuthProvider = {
 
     return {
       authenticated: false,
-      error: {
-        message: "Check failed",
-        name: "Token not found",
-      },
       logout: true,
       redirectTo: "/login",
+      error: {
+        name: "Unauthorized",
+        message: "Session expired or not logged in",
+      },
     };
   },
-  getPermissions: async () => null,
-  getIdentity: async () => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) {
-      return null;
-    }
 
+  getIdentity: async () => {
+    const response = await fetch("http://localhost:3000/admin/me", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (!response.ok) return null;
+
+    const user = await response.json();
     return {
-      id: 1,
-      name: "James Sulivan",
-      avatar: "https://i.pravatar.cc/150",
+      id: user._id,
+      name: user.username,
+      avatar: "https://i.pravatar.cc/150", // optional
     };
   },
+
+  getPermissions: async () => null,
+
+  onError: async (error) => {
+    if (error.status === 401) {
+      return {
+        logout: true,
+        redirectTo: "/login",
+        error: {
+          name: "Unauthorized",
+          message: "Session expired",
+        },
+      };
+    }
+    return { error };
+  },
+
+  register: async () => ({
+    success: false,
+    error: {
+      name: "Not implemented",
+      message: "Registration is not supported",
+    },
+  }),
+
+  updatePassword: async () => ({ success: true }),
+  forgotPassword: async () => ({ success: true }),
 };

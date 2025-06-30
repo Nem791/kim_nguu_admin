@@ -1,8 +1,9 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   type HttpError,
   useExport,
   useNavigation,
+  useNotification,
   useTranslate,
   useUpdate,
 } from "@refinedev/core";
@@ -27,6 +28,9 @@ import type {
 } from "../../interfaces"; // Ensure these interfaces are defined
 import { RefineListView } from "../../components";
 import { Box } from "@mui/material";
+import { useReservationSocket } from "../../hooks/useSocket";
+import { eventBus } from "../../contexts/eventBus";
+import { debounce } from "lodash";
 
 // Define IReservation and IReservationFilterVariables in your interfaces file (e.g., src/interfaces/index.ts)
 /*
@@ -61,22 +65,34 @@ export const ReservationList = () => {
   const t = useTranslate();
   const { mutate } = useUpdate(); // No need to specify resource here if default is set or using <Refine resource="reservations">
 
-  const { dataGridProps, filters, sorters } = useDataGrid<
-    IReservation,
-    HttpError,
-    IReservationFilterVariables
-  >({
-    resource: "reservations", // Explicitly set resource for clarity
+  const {
+    dataGridProps,
+    filters,
+    sorters,
+    tableQuery, // ✅ use this instead of deprecated tableQueryResult
+  } = useDataGrid<IReservation, HttpError, IReservationFilterVariables>({
+    resource: "reservations",
     initialPageSize: 10,
-    sorters: [
-      {
-        field: "updatedAt",
-        order: "desc",
-      },
-    ],
-    // Example of syncWithLocation: true if you want filters/sorters in URL
-    // syncWithLocation: true,
+    sorters: [{ field: "updatedAt", order: "desc" }],
   });
+
+  useEffect(() => {
+    // Create a debounced version of refetch
+    const debouncedRefetch = debounce(() => {
+      tableQuery.refetch();
+    }, 500); // 300ms delay, adjust as needed
+
+    const handleNewReservation = () => {
+      debouncedRefetch();
+    };
+
+    eventBus.on("reservationCreated", handleNewReservation);
+
+    return () => {
+      eventBus.off("reservationCreated", handleNewReservation);
+      debouncedRefetch.cancel(); // cancel any pending debounce on cleanup
+    };
+  }, [tableQuery]);
 
   const columns = useMemo<GridColDef<IReservation>[]>(
     () => [

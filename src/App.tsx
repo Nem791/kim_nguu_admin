@@ -33,6 +33,7 @@ import { Header, Title } from "./components";
 import { useAutoLoginForDemo } from "./hooks";
 import { customDataProvider } from "./customDataProvider";
 import { ReservationShow, ReservationList } from "./pages/reservations";
+import { ReservationNotifier } from "./contexts/ReservationNotifier";
 
 const API_URL = "https://api.finefoods.refine.dev";
 
@@ -93,6 +94,7 @@ const App: React.FC = () => {
                 },
               ]}
             >
+              <ReservationNotifier />
               <Routes>
                 <Route
                   element={

@@ -10,6 +10,9 @@ import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import { OrderStatus } from "../../order"; // Reuse for reservation status visual
+import { useEffect } from "react";
+import { eventBus } from "../../../contexts/eventBus";
+import { debounce } from "lodash";
 
 dayjs.extend(relativeTime);
 
@@ -35,6 +38,24 @@ export const ReservationTimeline: React.FC = () => {
   });
 
   const { data } = tableQueryResult;
+
+  useEffect(() => {
+    // Create debounced refetch function
+    const debouncedRefetch = debounce(() => {
+      tableQueryResult.refetch();
+    }, 300); // adjust delay as needed
+
+    const handleNewReservation = () => {
+      debouncedRefetch();
+    };
+
+    eventBus.on("reservationCreated", handleNewReservation);
+
+    return () => {
+      eventBus.off("reservationCreated", handleNewReservation);
+      debouncedRefetch.cancel(); // clean up any queued debounced calls
+    };
+  }, [tableQueryResult]);
 
   return (
     <Box

@@ -1,8 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useTranslate, useNavigation, useUpdate } from "@refinedev/core";
 import { useDataGrid } from "@refinedev/mui";
-import CheckOutlined from "@mui/icons-material/CheckOutlined";
-import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import Typography from "@mui/material/Typography";
 import {
   DataGrid,
@@ -10,6 +8,8 @@ import {
   type GridColDef,
 } from "@mui/x-data-grid";
 import type { IReservation } from "../../../interfaces";
+import { eventBus } from "../../../contexts/eventBus";
+import { debounce } from "lodash";
 
 export const RecentReservations: React.FC = () => {
   const t = useTranslate();
@@ -19,7 +19,7 @@ export const RecentReservations: React.FC = () => {
     resource: "reservations",
   });
 
-  const { dataGridProps } = useDataGrid<IReservation>({
+  const { dataGridProps, tableQuery } = useDataGrid<IReservation>({
     resource: "reservations",
     initialSorter: [
       {
@@ -30,6 +30,26 @@ export const RecentReservations: React.FC = () => {
     initialPageSize: 10,
     syncWithLocation: false,
   });
+
+  useEffect(() => {
+    // Debounce the refetch function
+    const debouncedRefetch = debounce(() => {
+      tableQuery.refetch();
+    }, 300); // Adjust debounce delay (ms) as needed
+
+    const handleNewReservation = () => {
+      debouncedRefetch();
+    };
+
+    // Subscribe to reservation event
+    eventBus.on("reservationCreated", handleNewReservation);
+
+    return () => {
+      // Cleanup listener and cancel pending debounce
+      eventBus.off("reservationCreated", handleNewReservation);
+      debouncedRefetch.cancel(); // Prevents memory leaks
+    };
+  }, [tableQuery]);
 
   const columns = useMemo<GridColDef<IReservation>[]>(
     () => [

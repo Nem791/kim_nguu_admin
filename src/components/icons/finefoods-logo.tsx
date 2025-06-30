@@ -1,7 +1,7 @@
 import React from "react";
 
 export const FinefoodsLogoIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
-  props,
+  props
 ) => (
   <svg
     width="28"
@@ -33,7 +33,7 @@ export const FinefoodsLogoIcon: React.FC<React.SVGProps<SVGSVGElement>> = (
 );
 
 export const FinefoodsLogoText: React.FC<React.SVGProps<SVGSVGElement>> = (
-  props,
+  props
 ) => {
   return (
     <svg

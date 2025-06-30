@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useApiUrl, useList, useTranslate } from "@refinedev/core";
 import dayjs from "dayjs";
 import Grid from "@mui/material/Grid2";
@@ -16,6 +16,8 @@ import { Card, RefineListView } from "../../components";
 import { RecentReservations } from "../../components/dashboard/recentReservations";
 import { ReservationTimeline } from "../../components/dashboard/reservationTimeline";
 import { IReservation } from "../../interfaces";
+import { eventBus } from "../../contexts/eventBus";
+import { debounce } from "lodash";
 
 type DateFilter = "lastWeek" | "lastMonth";
 
@@ -57,7 +59,7 @@ export const DashboardPage: React.FC = () => {
     }
   }, [selectedDateFilter]);
 
-  const { data: reservationList } = useList<IReservation>({
+  const { data: reservationList, refetch } = useList<IReservation>({
     resource: "reservations",
     filters: [
       {
@@ -76,6 +78,19 @@ export const DashboardPage: React.FC = () => {
       pageSize: 1000,
     },
   });
+
+  useEffect(() => {
+    const debouncedRefetch = debounce(() => {
+      refetch();
+    }, 500); // 500ms delay
+
+    eventBus.on("reservationCreated", debouncedRefetch);
+
+    return () => {
+      eventBus.off("reservationCreated", debouncedRefetch);
+      debouncedRefetch.cancel();
+    };
+  }, [refetch]);
 
   const dailyReservations = useMemo<IReservationChart[]>(() => {
     const map: Record<string, number> = {};

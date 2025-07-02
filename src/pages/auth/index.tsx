@@ -40,7 +40,7 @@ const renderAuthContent = (content: React.ReactNode) => {
               height: "auto",
             }}
           /> */}
-          <div style={{ marginLeft: "-12px" }}>
+          <div style={{ marginLeft: "-6px" }}>
             <FinefoodsLogoText maxWidth="400px" width="40vw" minWidth="260px" />
           </div>
         </Box>

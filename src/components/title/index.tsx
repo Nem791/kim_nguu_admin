@@ -19,11 +19,12 @@ export const Title: React.FC<TitleProps> = ({ collapsed }) => {
         }}
       >
         {collapsed ? (
-          <FinefoodsLogoIcon />
+          // <FinefoodsLogoIcon />
+          <FinefoodsLogoText maxWidth="400px" width="40vw" minWidth="260px" />
         ) : (
           <>
-            <FinefoodsLogoIcon />
-            <FinefoodsLogoText />
+            {/* <FinefoodsLogoIcon /> */}
+            <FinefoodsLogoText marginLeft="-18px" width="240px" />
           </>
         )}
       </Box>

@@ -98,10 +98,10 @@ const App: React.FC = () => {
               <Routes>
                 <Route
                   element={
-                    <Authenticated
-                      key="authenticated-routes"
-                      fallback={<CatchAllNavigate to="/login" />}
-                    >
+                    // <Authenticated
+                    //   key="authenticated-routes"
+                    //   fallback={<CatchAllNavigate to="/login" />}
+                    // >
                       <ThemedLayoutV2 Header={Header} Title={Title}>
                         <Box
                           sx={{
@@ -113,7 +113,7 @@ const App: React.FC = () => {
                           <Outlet />
                         </Box>
                       </ThemedLayoutV2>
-                    </Authenticated>
+                    // </Authenticated>
                   }
                 >
                   <Route index element={<DashboardPage />} />

@@ -26,20 +26,23 @@ const renderAuthContent = (content: React.ReactNode) => {
           gap="12px"
           marginBottom="16px"
         >
-          <FinefoodsLogoIcon
+          {/* <FinefoodsLogoIcon
             style={{
               width: 64,
               height: 64,
               color: "#fff",
             }}
-          />
-          <FinefoodsLogoText
+          /> */}
+          {/* <FinefoodsLogoText
             style={{
               color: "#fff",
               width: "300px",
               height: "auto",
             }}
-          />
+          /> */}
+          <div style={{ marginLeft: "-12px" }}>
+            <FinefoodsLogoText maxWidth="400px" width="40vw" minWidth="260px" />
+          </div>
         </Box>
       </Link>
       {content}
